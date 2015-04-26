@@ -70,15 +70,16 @@ void Map_hast_Test::testCase_find_data()
         "qfasthash_find"
      };
 
-    for(int count : {10,100,1000/*,10000,100000*/})
+    for(int count : {10,100,1000,10000,100000,1000000})
     {
         for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
         {
 
             QString text;
             text += QLatin1String(tests[t]);
+            text = text.leftJustified(20, ' ', true);
             text +=  QLatin1String(" -- ");
-            text += QString::number(count);
+            text += QString::number(count).leftJustified(12, ' ');
 
 
             QTest::newRow(text.toLatin1().constData()) << QString(tests[t]) << count;
