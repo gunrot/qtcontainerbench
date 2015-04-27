@@ -7,9 +7,10 @@
 #include <map>
 #include <unordered_map>
 #include <qfasthash_p.h>
+#include <stdint.h>
 
-typedef int64_t tTestKey;
-typedef int64_t tTestValue;
+typedef int32_t tTestKey;
+typedef int32_t tTestValue;
 //typedef  std::pair<int,int> tVecData;
 struct tVecData
 {
@@ -17,7 +18,10 @@ struct tVecData
         :first(f)
         ,second(s)
     {}
-    tVecData() :tVecData(0,0) {}
+    tVecData()
+        :first(0)
+        ,second(0)
+    {}
     tTestKey first;
     tTestValue second;
 };
@@ -56,6 +60,8 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
+static int testcounts[] = {10,20,50,80,100,1000,10000,100000,1000000};
+
 void Map_hast_Test::testCase_insert_data()
 {
     QTest::addColumn<QString>("testcontainer");
@@ -67,7 +73,8 @@ void Map_hast_Test::testCase_insert_data()
         "stdmap_insert"
      };
 
-    for(int count : {10,20,50,80,100,1000,10000,100000,1000000})
+
+    for(int count : testcounts)
     {
         for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
         {
@@ -100,7 +107,7 @@ void Map_hast_Test::testCase_find_data()
         "qfasthash_find"
      };
 
-    for(int count : {10,20,50,80,100,1000,10000,100000,1000000})
+    for(int count : testcounts)
     {
         for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
         {
