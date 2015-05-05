@@ -6,11 +6,11 @@
 #include <utility>
 #include <map>
 #include <unordered_map>
-#include <qfasthash_p.h>
+#include "qfasthash_p.h"
 #include <stdint.h>
-
-typedef int32_t tTestKey;
-typedef int32_t tTestValue;
+#include <boost/unordered_map.hpp>
+typedef double tTestKey;
+typedef double tTestValue;
 //typedef  std::pair<int,int> tVecData;
 struct tVecData
 {
@@ -70,7 +70,10 @@ void Map_hast_Test::testCase_insert_data()
     static const char * tests[] = {
       "QMap_insert",
         "QHash_insert",
-        "stdmap_insert"
+        "stdmap_insert",
+        "stdunordered_insert",
+        "qfasthash_insert",
+        "boostunordered_insert"
      };
 
 
@@ -104,7 +107,8 @@ void Map_hast_Test::testCase_find_data()
         "QVector_lowerbound",
         "stdmap_find",
         "stdunordered_find",
-        "qfasthash_find"
+        "qfasthash_find",
+        "boostunordered_find"
      };
 
     for(int count : testcounts)
@@ -149,6 +153,29 @@ inline void insertdata(std::map<tTestKey,tTestValue> & m,int testcount)
     }
 }
 
+inline void insertdata(std::unordered_map <tTestKey,tTestValue> & m,int testcount)
+{
+    for(int i = testcount ;i> 0 ;--i)
+    {
+        m[i]=i;
+    }
+}
+
+inline void insertdata(boost::unordered_map <tTestKey,tTestValue> & m,int testcount)
+{
+    for(int i = testcount ;i> 0 ;--i)
+    {
+        m[i]=i;
+    }
+}
+
+inline void insertdata(QFastHash<tTestKey,tTestValue> & m,int testcount)
+{
+    for(int i = testcount ;i> 0 ;--i)
+    {
+        m[i]=i;
+    }
+}
 
 void Map_hast_Test::testCase_insert()
 {
@@ -185,6 +212,39 @@ void Map_hast_Test::testCase_insert()
         }
         auto it = m.find(testcount);
         if(it->first != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("stdunordered_insert"))
+    {
+        std::unordered_map<tTestKey,tTestValue> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = m.find(testcount);
+        if(it->first != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("boostunordered_insert"))
+    {
+        boost::unordered_map<tTestKey,tTestValue> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = m.find(testcount);
+        if(it->first != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("qfasthash_insert"))
+    {
+        QFastHash<tTestKey,tTestValue> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = m.constFind(testcount);
+        if(it != testcount) QFAIL( "fail");
 
     }
 }
@@ -263,10 +323,7 @@ void Map_hast_Test::testCase_find()
     else if (testcontainer == QLatin1String("stdmap_find"))
     {
         std::map<tTestKey,tTestValue> m_stdmapTest;
-        for(int i = testcount ;i> 0 ;--i)
-        {
-            m_stdmapTest[i]=i;
-        }
+        insertdata(m_stdmapTest,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
@@ -279,10 +336,20 @@ void Map_hast_Test::testCase_find()
     else if (testcontainer == QLatin1String("stdunordered_find"))
     {
         std::unordered_map <tTestKey,tTestValue> m_stdunorderedTest;
-        for(int i = testcount ;i> 0 ;--i)
-        {
-            m_stdunorderedTest[i]=i;
+        insertdata(m_stdunorderedTest,testcount);
+        QBENCHMARK {
+            for(int i = 1 ;i <= testcount ;++i)
+            {
+                auto it = m_stdunorderedTest.find(i);
+                if(it->first != i) QFAIL( "fail");
+            }
         }
+
+    }
+    else if (testcontainer == QLatin1String("boostunordered_find"))
+    {
+        boost::unordered_map <tTestKey,tTestValue> m_stdunorderedTest;
+        insertdata(m_stdunorderedTest,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
@@ -295,10 +362,7 @@ void Map_hast_Test::testCase_find()
     else if (testcontainer == QLatin1String("qfasthash_find"))
     {
         QFastHash<tTestKey,tTestValue> m_fasthash_Test;
-        for(int i = testcount ;i> 0 ;--i)
-        {
-            m_fasthash_Test[i]=i;
-        }
+        insertdata(m_fasthash_Test,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
