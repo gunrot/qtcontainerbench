@@ -106,6 +106,7 @@ void Map_hast_Test::testCase_find_data()
         "QHash_find",
         "QHash_constFind",
         "QVector_lowerbound",
+        "stdvector_lowerbound",
         "stdmap_find",
         "stdunordered_find",
         "qfasthash_find",
@@ -308,6 +309,22 @@ void Map_hast_Test::testCase_find()
     else if (testcontainer == QLatin1String("QVector_lowerbound"))
     {
        QVector<tVecData> m_vecTest;
+        for(int i = 1 ;i<= testcount ;++i)
+        {
+            m_vecTest.push_back(tVecData(i,i));
+        }
+        QBENCHMARK {
+            for(int i = 1 ;i <= testcount ;++i)
+            {
+                auto it = std::lower_bound(std::begin(m_vecTest),std::end(m_vecTest),tVecData(i,0));
+                if(it->first != i) QFAIL( "fail");
+            }
+        }
+
+    }
+    else if (testcontainer == QLatin1String("stdvector_lowerbound"))
+    {
+       std::vector<tVecData> m_vecTest;
         for(int i = 1 ;i<= testcount ;++i)
         {
             m_vecTest.push_back(tVecData(i,i));
