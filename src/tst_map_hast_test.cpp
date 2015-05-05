@@ -22,6 +22,10 @@ struct tVecData
         :first(0)
         ,second(0)
     {}
+    bool operator<( const tVecData &t2) const
+    {
+        return first < t2.first;
+    }
     tTestKey first;
     tTestValue second;
 };
@@ -44,10 +48,7 @@ private Q_SLOTS:
 
 };
 
-inline bool operator<(const tVecData &t1, const tVecData &t2)
-{
-    return t1.first < t2.first;
-}
+
 Map_hast_Test::Map_hast_Test()
 {
 }
@@ -60,7 +61,7 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
-static int testcounts[] = {10,20,50,80,100,1000,10000,100000,1000000};
+static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
 
 void Map_hast_Test::testCase_insert_data()
 {
@@ -77,9 +78,9 @@ void Map_hast_Test::testCase_insert_data()
      };
 
 
-    for(int count : testcounts)
+    for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
     {
-        for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
+        for(int count : testcounts)
         {
 
             QString text;
@@ -111,11 +112,11 @@ void Map_hast_Test::testCase_find_data()
         "boostunordered_find"
      };
 
-    for(int count : testcounts)
-    {
-        for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
-        {
+     for (unsigned int t = 0; t < sizeof(tests)/sizeof(tests[0]);++t)
+     {
 
+        for(int count : testcounts)
+        {
             QString text;
             text += QLatin1String(tests[t]);
             text = text.leftJustified(20, ' ', true);
