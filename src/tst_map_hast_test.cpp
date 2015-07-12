@@ -61,7 +61,7 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
-static int testcounts[] = {10000};//{5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
+static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100,1000,10000};//,1000,10000,100000,1000000};
 
 void Map_hast_Test::testCase_insert_data()
 {
