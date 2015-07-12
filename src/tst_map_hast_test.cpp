@@ -9,8 +9,8 @@
 #include "qfasthash_p.h"
 #include <stdint.h>
 #include <boost/unordered_map.hpp>
-typedef double tTestKey;
-typedef double tTestValue;
+typedef int tTestKey;
+typedef int tTestValue;
 //typedef  std::pair<int,int> tVecData;
 struct tVecData
 {
@@ -61,7 +61,7 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
-static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
+static int testcounts[] = {10000};//{5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
 
 void Map_hast_Test::testCase_insert_data()
 {
@@ -72,6 +72,7 @@ void Map_hast_Test::testCase_insert_data()
       "QMap_insert",
         "QHash_insert",
         "stdmap_insert",
+        "stdvector_pb_sort",
         "stdunordered_insert",
         "qfasthash_insert",
         "boostunordered_insert"
@@ -179,6 +180,16 @@ inline void insertdata(QFastHash<tTestKey,tTestValue> & m,int testcount)
     }
 }
 
+inline void insertdata(std::vector<tVecData>  & m,int testcount)
+{
+
+     for(int i = testcount ;i>0 ;--i)
+     {
+         m.push_back(tVecData(i,i));
+     }
+
+     std::sort(std::begin(m),std::end(m),std::less<tVecData>());
+}
 void Map_hast_Test::testCase_insert()
 {
     QFETCH(QString,testcontainer);
@@ -203,6 +214,17 @@ void Map_hast_Test::testCase_insert()
         }
         auto it = m.find(testcount);
         if(*it != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("stdvector_pb_sort"))
+    {
+        std::vector<tVecData> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = std::lower_bound(std::begin(m),std::end(m),tVecData(testcount,0));
+        if(it->first != testcount) QFAIL( "fail");
 
     }
     else if (testcontainer == QLatin1String("stdmap_insert"))
