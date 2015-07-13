@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+#build dir
+build-*
+
+#qt creator stuff.
+*.pro.user*

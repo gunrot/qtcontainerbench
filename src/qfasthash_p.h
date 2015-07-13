@@ -124,7 +124,7 @@ private:
     typedef typename QVector<QtPrivate::Optional<key_type> >::const_iterator internal_key_iterator;
 
 public:
-    QFastHash() : m_keys(), m_values(), m_size(0), m_maxLoadFactor(0.8) {}
+    QFastHash() : m_keys(), m_values(), m_size(0), m_maxLoadFactor(0.8f) {}
 
     void swap(QFastHash &other) {
         m_keys.swap(other.m_keys);
