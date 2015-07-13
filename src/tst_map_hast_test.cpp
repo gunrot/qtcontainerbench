@@ -17,13 +17,20 @@
 namespace std{
     /* std::hash specialization for QString so it can be used
      * as a key in std::unordered_map */
-    template<class Key> struct hash;
+
     template<> struct hash<QString> {
         typedef QString Key;
         typedef uint result_type;
         inline uint operator()(const QString &s) const { return qHash(s); }
     };
 }
+
+std::size_t hash_value(const QString &s)
+    {
+        boost::hash<int> hasher;
+        return hasher(qHash(s));
+    }
+
 static std::vector<QString>  s_vec;
 void createStringNumberArray(size_t n)
 {
@@ -31,7 +38,7 @@ void createStringNumberArray(size_t n)
     if(n  >= s_vec.size())
     {
          for (auto i=s_vec.size(); i <= n; ++i)
-            s_vec.push_back(QString::number(i));
+            s_vec.push_back(QString::number(i)+"                               ");
     }
 }
 
@@ -97,7 +104,7 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
-static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100,1000,10000};//,1000,10000,100000,1000000};
+static int testcounts[] = {100};//{5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
 
 void Map_hast_Test::testCase_insert_data()
 {
@@ -303,7 +310,7 @@ void Map_hast_Test::testCase_insert()
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount);
+        auto it = m.find(MAKE_KEY(testcount));
         if(it->second != testcount) QFAIL( "fail");
 
     }
@@ -447,7 +454,7 @@ void Map_hast_Test::testCase_find()
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_stdunorderedTest.find(MAKE_KEY(i);
+                auto it = m_stdunorderedTest.find(MAKE_KEY(i));
                 if(it->second != i) QFAIL( "fail");
             }
         }
