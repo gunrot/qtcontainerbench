@@ -25,12 +25,12 @@ namespace std{
     };
 }
 static std::vector<QString>  s_vec;
-void createStringNumberArray(int n)
+void createStringNumberArray(size_t n)
 {
 
     if(n  >= s_vec.size())
     {
-         for (int i=s_vec.size(); i <= n; ++i)
+         for (auto i=s_vec.size(); i <= n; ++i)
             s_vec.push_back(QString::number(i));
     }
 }
@@ -97,7 +97,7 @@ void Map_hast_Test::initTestCase()
 void Map_hast_Test::cleanupTestCase()
 {
 }
-static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
+static int testcounts[] = {5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100,1000,10000};//,1000,10000,100000,1000000};
 
 void Map_hast_Test::testCase_insert_data()
 {
@@ -109,6 +109,7 @@ void Map_hast_Test::testCase_insert_data()
       "QMap_insert",
         "QHash_insert",
         "stdmap_insert",
+        "stdvector_pb_sort",
         "stdunordered_insert",
         "qfasthash_insert",
 #ifdef USE_BOOST
@@ -221,6 +222,16 @@ inline void insertdata(QFastHash<tTestKey,tTestValue> & m,int testcount)
     }
 }
 
+inline void insertdata(std::vector<tVecData>  & m,int testcount)
+{
+
+     for(int i = testcount ;i>0 ;--i)
+     {
+         m.push_back(tVecData(MAKE_KEY(i),i));
+     }
+
+     std::sort(std::begin(m),std::end(m),std::less<tVecData>());
+}
 void Map_hast_Test::testCase_insert()
 {
     QFETCH(QString,testcontainer);
@@ -249,6 +260,17 @@ void Map_hast_Test::testCase_insert()
         }
         auto it = m.find(MAKE_KEY(testcount));
         if(*it != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("stdvector_pb_sort"))
+    {
+        std::vector<tVecData> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = std::lower_bound(std::begin(m),std::end(m),tVecData(MAKE_KEY(testcount),0));
+        if(it->second != testcount) QFAIL( "fail");
 
     }
     else if (testcontainer == QLatin1String("stdmap_insert"))
