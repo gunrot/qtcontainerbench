@@ -19,8 +19,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
-mac: INCLUDEPATH += /Users/gunnar/src/boost_1_58_0
-win*: INCLUDEPATH += D:/gunnar/src/boost_1_58_0
+INCLUDEPATH += ../boost
 
 SOURCES += tst_map_hast_test.cpp \
     qfasthash.cpp
