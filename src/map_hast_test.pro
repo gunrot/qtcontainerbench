@@ -25,7 +25,10 @@ SOURCES += tst_map_hast_test.cpp \
     qfasthash.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-DEFINES += TEST_KEY_STRING
+#DEFINES += TEST_KEY_STRING
+#DEFINES += TEST_KEY_DOUBLE
+DEFINES += TEST_KEY_INT32
+
 DEFINES += USE_BOOST
 HEADERS += \
     qfasthash_p.h

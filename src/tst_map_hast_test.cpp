@@ -46,11 +46,20 @@ typedef QString tTestKey;
 #define MAKE_KEY(x) s_vec[x]
 //#define MAKE_KEY(x) QString::number(x)
 #else
+#if defined(TEST_KEY_DOUBLE)
+typedef double tTestKey;
+#elif defined(TEST_KEY_INT32)
 typedef int32_t tTestKey;
+#endif
 #define MAKE_KEY(x) x
 #endif
 
+#if defined(TEST_KEY_DOUBLE)
+typedef double tTestValue;
+#elif defined(TEST_KEY_INT32)
 typedef int32_t tTestValue;
+#endif
+
 
 struct tVecData
 {
@@ -72,6 +81,11 @@ struct tVecData
     tTestKey first;
     tTestValue second;
 };
+
+inline size_t calcContainerCount(int testcount)
+{
+    return std::max(1UL,100000UL/testcount);
+}
 
 class Map_hast_Test : public QObject
 {
@@ -116,6 +130,7 @@ void Map_hast_Test::testCase_insert_data()
       "QMap_insert",
         "QHash_insert",
         "stdmap_insert",
+        "QVector_pb_sort",
         "stdvector_pb_sort",
         "stdunordered_insert",
         "qfasthash_insert",
@@ -180,64 +195,117 @@ void Map_hast_Test::testCase_find_data()
     }
 }
 
-inline void insertdata(QMap<tTestKey,tTestValue> & m,int testcount)
+inline void insertdata(std::vector<QMap<tTestKey,tTestValue>> & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
     for(int i = testcount ;i> 0 ;--i)
     {
-        m.insert(MAKE_KEY(i),i);
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x].insert(MAKE_KEY(i),i);
+        }
+    }
+}
+inline void insertdata(std::vector<QHash<tTestKey,tTestValue>> & m,int testcount)
+{
+    m.clear();
+    m.resize(calcContainerCount(testcount));
+    for(int i = testcount ;i> 0 ;--i)
+    {
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x].insert(MAKE_KEY(i),i);
+        }
     }
 
 }
-inline void insertdata(QHash<tTestKey,tTestValue> & m,int testcount)
+inline void insertdata(std::vector<std::map<tTestKey,tTestValue>> & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
     for(int i = testcount ;i> 0 ;--i)
     {
-        m.insert(MAKE_KEY(i),i);
-    }
-
-}
-inline void insertdata(std::map<tTestKey,tTestValue> & m,int testcount)
-{
-    for(int i = testcount ;i> 0 ;--i)
-    {
-        m[MAKE_KEY(i)]=i;
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x][MAKE_KEY(i)]=i;
+        }
     }
 }
 
-inline void insertdata(std::unordered_map <tTestKey,tTestValue> & m,int testcount)
+inline void insertdata(std::vector<std::unordered_map <tTestKey,tTestValue>> & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
     for(int i = testcount ;i> 0 ;--i)
     {
-        m[MAKE_KEY(i)]=i;
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x][MAKE_KEY(i)]=i;
+        }
     }
 }
 #ifdef USE_BOOST
-inline void insertdata(boost::unordered_map <tTestKey,tTestValue> & m,int testcount)
+inline void insertdata(std::vector<boost::unordered_map <tTestKey,tTestValue>> & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
     for(int i = testcount ;i> 0 ;--i)
     {
-        m[MAKE_KEY(i)]=i;
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x][MAKE_KEY(i)]=i;
+        }
     }
 }
 #endif
 
-inline void insertdata(QFastHash<tTestKey,tTestValue> & m,int testcount)
+inline void insertdata(std::vector<QFastHash<tTestKey,tTestValue>> & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
     for(int i = testcount ;i> 0 ;--i)
     {
-        m[MAKE_KEY(i)]=i;
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x][MAKE_KEY(i)]=i;
+        }
     }
 }
 
-inline void insertdata(std::vector<tVecData>  & m,int testcount)
+inline void insertdata(std::vector<std::vector<tVecData>>  & m,int testcount)
 {
+    m.clear();
+    m.resize(calcContainerCount(testcount));
 
-     for(int i = testcount ;i>0 ;--i)
-     {
-         m.push_back(tVecData(MAKE_KEY(i),i));
-     }
+    for(int i = testcount ;i>0 ;--i)
+    {
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x].push_back(tVecData(MAKE_KEY(i),i));
+        }
+    }
+    for(size_t x=0;x < m.size();++x)
+    {
+        std::sort(std::begin(m[x]),std::end(m[x]),std::less<tVecData>());
+    }
+}
+inline void insertdata(std::vector<QVector<tVecData>>  & m,int testcount)
+{
+    m.clear();
+    m.resize(calcContainerCount(testcount));
 
-     std::sort(std::begin(m),std::end(m),std::less<tVecData>());
+    for(int i = testcount ;i>0 ;--i)
+    {
+        for(size_t x=0;x < m.size();++x)
+        {
+            m[x].push_back(tVecData(MAKE_KEY(i),i));
+        }
+    }
+    for(size_t x=0;x < m.size();++x)
+    {
+        std::sort(std::begin(m[x]),std::end(m[x]),std::less<tVecData>());
+    }
 }
 void Map_hast_Test::testCase_insert()
 {
@@ -250,79 +318,90 @@ void Map_hast_Test::testCase_insert()
 
     if(testcontainer == QLatin1String("QMap_insert"))
     {
-        QMap<tTestKey,tTestValue> m;
+        std::vector<QMap<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount));
+        auto it = m[0].find(MAKE_KEY(testcount));
         if(*it != testcount) QFAIL( "fail");
     }
     else if (testcontainer == QLatin1String("QHash_insert"))
     {
-        QHash<tTestKey,tTestValue> m;
+        std::vector<QHash<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount));
+        auto it = m[0].find(MAKE_KEY(testcount));
         if(*it != testcount) QFAIL( "fail");
+
+    }
+    else if (testcontainer == QLatin1String("QVector_pb_sort"))
+    {
+        std::vector<QVector<tVecData>> m;
+
+        QBENCHMARK {
+            insertdata(m,testcount);
+        }
+        auto it = std::lower_bound(std::begin(m[0]),std::end(m[0]),tVecData(MAKE_KEY(testcount),0));
+        if(it->second != testcount) QFAIL( "fail");
 
     }
     else if (testcontainer == QLatin1String("stdvector_pb_sort"))
     {
-        std::vector<tVecData> m;
+        std::vector<std::vector<tVecData>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = std::lower_bound(std::begin(m),std::end(m),tVecData(MAKE_KEY(testcount),0));
+        auto it = std::lower_bound(std::begin(m[0]),std::end(m[0]),tVecData(MAKE_KEY(testcount),0));
         if(it->second != testcount) QFAIL( "fail");
 
     }
     else if (testcontainer == QLatin1String("stdmap_insert"))
     {
-        std::map<tTestKey,tTestValue> m;
+        std::vector<std::map<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount));
+        auto it = m[0].find(MAKE_KEY(testcount));
         if(it->second != testcount) QFAIL( "fail");
 
     }
     else if (testcontainer == QLatin1String("stdunordered_insert"))
     {
-        std::unordered_map<tTestKey,tTestValue> m;
+        std::vector<std::unordered_map<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount));
+        auto it = m[0].find(MAKE_KEY(testcount));
         if(it->second != testcount) QFAIL( "fail");
 
     }
 #ifdef USE_BOOST
     else if (testcontainer == QLatin1String("boostunordered_insert"))
     {
-        boost::unordered_map<tTestKey,tTestValue> m;
+        std::vector<boost::unordered_map<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.find(MAKE_KEY(testcount));
+        auto it = m[0].find(MAKE_KEY(testcount));
         if(it->second != testcount) QFAIL( "fail");
 
     }
 #endif
     else if (testcontainer == QLatin1String("qfasthash_insert"))
     {
-        QFastHash<tTestKey,tTestValue> m;
+        std::vector<QFastHash<tTestKey,tTestValue>> m;
 
         QBENCHMARK {
             insertdata(m,testcount);
         }
-        auto it = m.constFind(MAKE_KEY(testcount));
+        auto it = m[0].constFind(MAKE_KEY(testcount));
         if(it != testcount) QFAIL( "fail");
 
     }
@@ -339,111 +418,130 @@ void Map_hast_Test::testCase_find()
 
     if(testcontainer == QLatin1String("QMap_find"))
     {
-        QMap<tTestKey,tTestValue> m_mapTest;
-        insertdata(m_mapTest,testcount);
+        std::vector<QMap<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_mapTest.find(MAKE_KEY(i));
-                if(*it != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].find(MAKE_KEY(i));
+                    if(*it != i) QFAIL( "fail");
+                }
             }
         }
     }
     else if (testcontainer == QLatin1String("QMap_constFind"))
     {
-        QMap<tTestKey,tTestValue> m_mapTest;
-        insertdata(m_mapTest,testcount);
+        std::vector<QMap<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_mapTest.constFind(MAKE_KEY(i));
-                if(*it != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].constFind(MAKE_KEY(i));
+                    if(*it != i) QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("QHash_find"))
     {
-        QHash<tTestKey,tTestValue> m_hashTest;
-        insertdata(m_hashTest,testcount);
+        std::vector<QHash<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_hashTest.find(MAKE_KEY(i));
-                if(*it != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].find(MAKE_KEY(i));
+                    if(*it != i) QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("QHash_constFind"))
     {
-        QHash<tTestKey,tTestValue> m_hashTest;
-        insertdata(m_hashTest,testcount);
+        std::vector<QHash<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_hashTest.constFind(MAKE_KEY(i));
-                if(*it != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].constFind(MAKE_KEY(i));
+                    if(*it != i) QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("QVector_lowerbound"))
     {
-       QVector<tVecData> m_vecTest;
-        for(int i = 1 ;i<= testcount ;++i)
-        {
-            m_vecTest.push_back(tVecData(MAKE_KEY(i),i));
-        }
+        std::vector<QVector<tVecData>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = std::lower_bound(std::begin(m_vecTest),std::end(m_vecTest),tVecData(MAKE_KEY(i),0));
-                if(it->second != i)
-                    QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = std::lower_bound(std::begin(m[x]),std::end(m[x]),tVecData(MAKE_KEY(i),0));
+                    if(it->second != i)
+                        QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("stdvector_lowerbound"))
     {
-       std::vector<tVecData> m_vecTest;
-        for(int i = 1 ;i<= testcount ;++i)
-        {
-            m_vecTest.push_back(tVecData(MAKE_KEY(i),i));
-        }
+        std::vector<std::vector<tVecData>> m;
+        insertdata(m,testcount);
+
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = std::lower_bound(std::begin(m_vecTest),std::end(m_vecTest),tVecData(MAKE_KEY(i),0));
-                if(it->second != i)
-                    QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = std::lower_bound(std::begin(m[x]),std::end(m[x]),tVecData(MAKE_KEY(i),0));
+                    if(it->second != i)
+                        QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("stdmap_find"))
     {
-        std::map<tTestKey,tTestValue> m_stdmapTest;
-        insertdata(m_stdmapTest,testcount);
+        std::vector<std::map<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_stdmapTest.find(MAKE_KEY(i));
-                if(it->second != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].find(MAKE_KEY(i));
+                    if(it->second != i) QFAIL( "fail");
+                }
             }
         }
 
     }
     else if (testcontainer == QLatin1String("stdunordered_find"))
     {
-        std::unordered_map <tTestKey,tTestValue> m_stdunorderedTest;
-        insertdata(m_stdunorderedTest,testcount);
+        std::vector<std::unordered_map <tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_stdunorderedTest.find(MAKE_KEY(i));
-                if(it->second != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].find(MAKE_KEY(i));
+                    if(it->second != i) QFAIL( "fail");
+                }
             }
         }
 
@@ -451,13 +549,16 @@ void Map_hast_Test::testCase_find()
 #ifdef USE_BOOST
     else if (testcontainer == QLatin1String("boostunordered_find"))
     {
-        boost::unordered_map <tTestKey,tTestValue> m_stdunorderedTest;
-        insertdata(m_stdunorderedTest,testcount);
+        std::vector<boost::unordered_map <tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_stdunorderedTest.find(MAKE_KEY(i));
-                if(it->second != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].find(MAKE_KEY(i));
+                    if(it->second != i) QFAIL( "fail");
+                }
             }
         }
 
@@ -465,13 +566,16 @@ void Map_hast_Test::testCase_find()
 #endif
     else if (testcontainer == QLatin1String("qfasthash_find"))
     {
-        QFastHash<tTestKey,tTestValue> m_fasthash_Test;
-        insertdata(m_fasthash_Test,testcount);
+        std::vector<QFastHash<tTestKey,tTestValue>> m;
+        insertdata(m,testcount);
         QBENCHMARK {
             for(int i = 1 ;i <= testcount ;++i)
             {
-                auto it = m_fasthash_Test.constFind(MAKE_KEY(i));
-                if(it != i) QFAIL( "fail");
+                for(size_t x=0;x < m.size();++x)
+                {
+                    auto it = m[x].constFind(MAKE_KEY(i));
+                    if(it != i) QFAIL( "fail");
+                }
             }
         }
 
