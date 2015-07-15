@@ -38,7 +38,7 @@ void createStringNumberArray(size_t n)
     if(n  >= s_vec.size())
     {
          for (auto i=s_vec.size(); i <= n; ++i)
-            s_vec.push_back(QString::number(i)+"                               ");
+            s_vec.push_back(QString("%1").arg(QString::number(i),12) + "                               ");
     }
 }
 
@@ -399,7 +399,8 @@ void Map_hast_Test::testCase_find()
             for(int i = 1 ;i <= testcount ;++i)
             {
                 auto it = std::lower_bound(std::begin(m_vecTest),std::end(m_vecTest),tVecData(MAKE_KEY(i),0));
-                if(it->second != i) QFAIL( "fail");
+                if(it->second != i)
+                    QFAIL( "fail");
             }
         }
 
@@ -415,7 +416,8 @@ void Map_hast_Test::testCase_find()
             for(int i = 1 ;i <= testcount ;++i)
             {
                 auto it = std::lower_bound(std::begin(m_vecTest),std::end(m_vecTest),tVecData(MAKE_KEY(i),0));
-                if(it->second != i) QFAIL( "fail");
+                if(it->second != i)
+                    QFAIL( "fail");
             }
         }
 
