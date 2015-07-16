@@ -87,12 +87,12 @@ inline size_t calcContainerCount(int testcount)
     return std::max(1UL,100000UL/testcount);
 }
 
-class Map_hast_Test : public QObject
+class QtContainerBench : public QObject
 {
     Q_OBJECT
 
 public:
-    Map_hast_Test();
+    QtContainerBench();
 
 private Q_SLOTS:
     void initTestCase();
@@ -106,21 +106,21 @@ private Q_SLOTS:
 };
 
 
-Map_hast_Test::Map_hast_Test()
+QtContainerBench::QtContainerBench()
 {
 }
 
-void Map_hast_Test::initTestCase()
+void QtContainerBench::initTestCase()
 {
 
 }
 
-void Map_hast_Test::cleanupTestCase()
+void QtContainerBench::cleanupTestCase()
 {
 }
 static int testcounts[] = {100};//{5,7,10,12,15,17,20,25,29,34,41,47, 50,75,80,90,100};//,1000,10000,100000,1000000};
 
-void Map_hast_Test::testCase_insert_data()
+void QtContainerBench::testCase_insert_data()
 {
     QTest::addColumn<QString>("testcontainer");
     QTest::addColumn<int>("testcount");
@@ -157,7 +157,7 @@ void Map_hast_Test::testCase_insert_data()
 
     }
 }
-void Map_hast_Test::testCase_find_data()
+void QtContainerBench::testCase_find_data()
 {
     QTest::addColumn<QString>("testcontainer");
     QTest::addColumn<int>("testcount");
@@ -307,7 +307,7 @@ inline void insertdata(std::vector<QVector<tVecData>>  & m,int testcount)
         std::sort(std::begin(m[x]),std::end(m[x]),std::less<tVecData>());
     }
 }
-void Map_hast_Test::testCase_insert()
+void QtContainerBench::testCase_insert()
 {
     QFETCH(QString,testcontainer);
     QFETCH(int,testcount);
@@ -407,7 +407,7 @@ void Map_hast_Test::testCase_insert()
     }
 }
 
-void Map_hast_Test::testCase_find()
+void QtContainerBench::testCase_find()
 {
     QFETCH(QString,testcontainer);
     QFETCH(int,testcount);
@@ -587,6 +587,6 @@ void Map_hast_Test::testCase_find()
 
 }
 
-QTEST_MAIN(Map_hast_Test)
+QTEST_MAIN(QtContainerBench)
 
-#include "tst_map_hast_test.moc"
+#include "tst_qtcontainerbench.moc"

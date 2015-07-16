@@ -14,14 +14,14 @@ CONFIG +=c++11
 
 #QMAKE_LFLAGS_RELEASE -= -O1
 
-TARGET = tst_map_hast_test
+TARGET = qtcontainerbench
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
 INCLUDEPATH += ../boost
 
-SOURCES += tst_map_hast_test.cpp \
+SOURCES += tst_qtcontainerbench.cpp \
     qfasthash.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
